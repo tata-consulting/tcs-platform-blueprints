@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.serviceName }}
+  description: Service bootstrapped from the TCS platform blueprint
+spec:
+  type: service
+  lifecycle: experimental
+  owner: ${{ values.owner }}
+  system: internal-developer-platform
