@@ -1,0 +1,88 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: python-microservice
+  title: Python FastAPI Microservice
+  description: Creates a production-ready Python FastAPI microservice with CI/CD, Helm chart, and TechDocs
+  tags:
+    - python
+    - fastapi
+    - microservice
+    - tcs-golden-path
+  annotations:
+    tcs.io/maturity: beta
+spec:
+  owner: group:platform-team
+  type: service
+  parameters:
+    - title: Service Information
+      required: [name, description, team]
+      properties:
+        name:
+          title: Service Name
+          type: string
+          pattern: '^[a-z][a-z0-9-]*$'
+          description: lowercase-kebab-case name for the service
+        description:
+          title: Description
+          type: string
+        team:
+          title: Owning Team
+          type: string
+        tier:
+          title: Service Tier
+          type: string
+          enum: [tier-1, tier-2, tier-3]
+          default: tier-2
+          description: tier-1=SLO+oncall required, tier-2=best-effort, tier-3=deprecated
+    - title: Infrastructure
+      required: [awsRegion, ecrRepo]
+      properties:
+        awsRegion:
+          title: AWS Region
+          type: string
+          default: us-east-1
+        ecrRepo:
+          title: ECR Repository Name
+          type: string
+    - title: GitHub Repository
+      required: [repoOwner]
+      properties:
+        repoOwner:
+          title: GitHub Owner
+          type: string
+          default: tata-consulting
+  steps:
+    - id: fetch-template
+      name: Fetch Template
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          team: ${{ parameters.team }}
+          tier: ${{ parameters.tier }}
+          awsRegion: ${{ parameters.awsRegion }}
+          ecrRepo: ${{ parameters.ecrRepo }}
+          repoOwner: ${{ parameters.repoOwner }}
+    - id: publish
+      name: Publish to GitHub
+      action: publish:github
+      input:
+        allowedHosts: [github.com]
+        description: ${{ parameters.description }}
+        repoUrl: github.com?repo=${{ parameters.name }}&owner=${{ parameters.repoOwner }}
+        defaultBranch: main
+    - id: register
+      name: Register in Catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in Catalog
+        url: ${{ steps.register.output.entityRef }}
