@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.name }}
+  description: ${{ values.description }}
+  annotations:
+    github.com/project-slug: ${{ values.repoOwner }}/${{ values.name }}
+    backstage.io/techdocs-ref: dir:.
+    tcs.io/team: ${{ values.team }}
+    tcs.io/tier: ${{ values.tier }}
+    tcs.io/language: nodejs
+    tcs.io/maturity: beta
+spec:
+  type: service
+  lifecycle: production
+  owner: group:${{ values.team }}
