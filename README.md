@@ -7,7 +7,3 @@ Reusable platform blueprints and accelerator patterns from TATA Consulting Servi
 - `docs/architecture/` - blueprint flow diagrams
 - `docs/meeting-minutes/` - working-session notes and action items
 
-## Initial backlog
-
-- #1 Bootstrap backstage-based platform blueprint
-- #2 Document blueprint maturity levels
